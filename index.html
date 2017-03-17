@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>LVA Project Map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!--<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />-->
+    <link href='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.css' rel='stylesheet' />
+    <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
+    <!--<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />-->
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: "Work Sans", sans-serif;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 67%;
+            border-left: 3px solid #d3d3d3;
+        }
+        h1 {
+            padding: 8px 25px 8px 15px;
+            margin: 0;
+            background: #3d3e3e;
+            color: whitesmoke;
+            font-weight: 400;
+            font-size: 1.5em;
+            text-align: left;
+        }
+        h2 {
+            margin: 0;
+            padding: 8px 25px 8px 15px;
+            color: #353636;
+            font-weight: 500;
+            font-size:1.6em;
+            text-align: left;
+        }
+        #side-panel p {
+           
+            margin: 8px 0 4px;
+            padding: 0 25px 0 15px;
+            color: #3d3d3d;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        
+    
+        
+        #side-panel p:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        #side-panel {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 33%;
+            background: whitesmoke;
+            border-right: 2px solid #1C9976;
+            overflow-y: scroll;
+        }
+        #ui-slider {
+            position: absolute;
+            bottom: 20px;
+            left: 36%;
+            width: 200px;
+            padding: 8px 15px 4px;
+            background: #969896;
+            border-radius: 3px;
+            color: whitesmoke;
+        }
+        
+         #side-info p {
+            color: #19191a;
+        }
+        
+        
+        
+        .slider {
+            width: 100%;
+        }
+        .legend2 {
+            text-align: left;
+            line-height: 18px;
+            color: #555;
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+      /*  #map > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div.leaflet-control-layers.leaflet-control-layers-expanded.leaflet-control {
+          padding: 10px 10px;
+        }*/
+        
+          #year {
+            position: absolute;
+            bottom: 30px;
+            left: 36%;
+            padding: 6px 55px 8px;
+           /* background: whitesmoke;
+            border: 2px solid #1C9976;*/
+           /* padding: 6px 15px 8px;*/
+            border-radius: 3px;
+            color: #484848;
+            font-size: 2em;
+        }
+        
+        #year span {
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+        
+       
+        
+    </style>
+</head>
+
+<body>
+
+    <div id='side-panel'>
+
+        <!--<h1>Louisville Visual Art</h1>-->
+        <p><img src="images/lva_logo1.png" alt="legend"></p>
+        <h2>Past and Present Projects of LVA</h2>
+        <p>Louisville Visual Art has been improving lives through visual art education, community outreach, and artist support for over 100 years. As a creative hub now established in the Portland Neighborhood, they are dedicated to engaging and encouraging artists through programming such as MAP, Artebella, Open Studio Weekend, and weekly calls for artists. LVA is shaping and inspiring the next generation of creative leaders by providing quality instruction to over 5,500 students annually through Children’s Fine Art Classes and outreach programs in schools and community centers. Louisville Visual Art aims to engage, inspire, and improve our community and city through the arts. 
+            <br></br> </p>
+        <div id='side-info'>
+            
+            <h1 class='sum-info' value="test"></h1>
+           <!-- <p class='address'></p-->
+            
+            <ul>
+                <p class='list1'></p>
+                <p class='list2'></p>
+                <p class='list3'></p>
+                <p class='list4'></p>
+                <p class='list5'></p>
+                <p class='list6'></p>
+                <p class='list7'></p>
+             
+            </ul>
+        </div>
+    </div>
+    <div id='map'></div>
+    <div id="ui-slider">
+        <input type="range" min="2015" max="2017" value="2016" step="1" class="slider" </div>
+        
+        <div id="year"><span>2016</span></div>
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <!--<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>-->
+        <script src='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.js'></script>
+        <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+        <script>
+            L.mapbox.accessToken = 'pk.eyJ1Ijoicmdkb25vaHVlIiwiYSI6Im5Ua3F4UzgifQ.PClcVzU5OUj17kuxqsY_Dg';
+            var map = L.mapbox.map('map', 'mapbox.light', {
+                center: [38.2, -85.6],
+                zoom: 11,
+                         minZoom: 9,
+                         maxZoom: 19
+                  //      maxBounds: L.latLngBounds([28, -70],[48, -100])
+            });
+            omnivore.csv('LVA_table2.csv')
+                .on('ready', function(e) {
+                    drawMap(e.target.toGeoJSON());
+                })
+                .on('error', function(e) {
+                    console.log(e.error[0].message);
+                });
+            //trying to make a temporary info window - eventually needs to be in the sidepanel
+            //   var info = L.control({
+            //       position: 'topright'
+            //   });
+            //
+            //   info.onAdd = function (map) {
+            //       this._div = L.DomUtil.create('div', 'info');
+            //       this.update();
+            //       return this._div;
+            //   };
+            //
+            //   // I need to figure out how to use this to get the data - 'props' is left over from the Leaflet tutoral i stole this
+            //   info.update = function (props) {
+            //       this._div.innerHTML = '<h4>Project Info here - eventually in sidepanel</h4>' + (props ?
+            //           '<b>' + props.Name + '</b><br />' : 'project info');
+            //   };
+            //   info.addTo(map);
+            //
+            //
+            //  info.update();
+            //drawing the symbols
+            function drawMap(data) {
+                var education = L.geoJson(data, {
+                    pointToLayer: function(feature, latlng) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: 'images/Map_marker4.png'
+                            })
+                        }).bindPopup(feature.properties.Name + '<br />' + feature.properties.Address).addTo(map);
+                    },
+                    filter: function(feature) {
+                        if (feature.properties.Area == 'Visual Art Education') {
+                            return feature;
+                        }
+                    },
+                    onEachFeature: function(feature, layer) {
+                        layer.on('click', function() {
+                            console.log(feature.properties)
+                            $(".sum-info").html(feature.properties.Name);
+                      //      $(".address").html(feature.properties.Address);
+                            $(".list1").html('<b> Program type: </b> '  + feature.properties.Type);
+                            $(".list2").html('<b> Description: </b> '  + feature.properties.desc1);
+                            $(".list3").html('<b> Number of participants: </b> '  + feature.properties.Participant);
+                            $(".list4").html('<b> Artists involved: </b> ' + feature.properties.Artists);
+                             $(".list5").html('<b> In partnerhsip with: </b> ' + feature.properties.partner);
+                             $(".list6").html('<b> Made possible by support from: </b> ' + feature.properties.funder);
+                            $(".list7").html('<a href="'+feature.properties.url+'" target="_blank">Click here for more information</a>');
+                        });
+                    }
+                }).addTo(map);
+                
+                
+                
+                
+                var outreach = L.geoJson(data, {
+                    pointToLayer: function(feature, latlng) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: 'images/Map_marker2.png'
+                            })
+                        }).bindPopup(feature.properties.Name + '<br />' + feature.properties.Address).addTo(map);
+                    },
+                    filter: function(feature) {
+                        if (feature.properties.Area == 'Community Outreach') {
+                            return feature;
+                        }
+                    },
+                    
+                    onEachFeature: function(feature, layer) {
+                        layer.on('click', function() {
+                            console.log(feature.properties)
+                            $(".sum-info").html(feature.properties.Name);
+                         //   $(".address").html(feature.properties.Address);
+                            $(".list1").html('<b> Program type: </b> '  + feature.properties.Type);
+                            $(".list2").html('<b> Description: </b> '  + feature.properties.desc1);
+                            $(".list3").html('<b> Number of participants: </b> '  + feature.properties.Participant);
+                            $(".list4").html('<b> Artists involved: </b> ' + feature.properties.Artists);
+                             $(".list5").html('<b> In partnerhsip with: </b> ' + feature.properties.partner);
+                             $(".list6").html('<b> Made possible by support from: </b> ' + feature.properties.funder);
+                            $(".list7").html('<a href="'+feature.properties.url+'" target="_blank">Click here for more information</a>');
+                       
+                        });
+                    }
+                }).addTo(map);
+               
+                
+                
+                
+                
+                var support = L.geoJson(data, {
+                    pointToLayer: function(feature, latlng) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: 'images/Map_marker3.png'
+                            })
+                        }).bindPopup(feature.properties.Name + '<br />' + feature.properties.Address).addTo(map);
+                    },
+                    filter: function(feature) {
+                        if (feature.properties.Area == 'Artist Support') {
+                            return feature;
+                        }
+                    },
+                    onEachFeature: function(feature, layer) {
+                        layer.on('click', function() {
+                            console.log(feature.properties)
+                            $(".sum-info").html(feature.properties.Name);
+                         //   $(".address").html(feature.properties.Address);
+                            $(".list1").html('<b> Program type: </b> '  + feature.properties.Type);
+                            $(".list2").html('<b> Description: </b> '  + feature.properties.desc1);
+                            $(".list3").html('<b> Number of participants: </b> '  + feature.properties.Participant);
+                            $(".list4").html('<b> Artists involved: </b> ' + feature.properties.Artists);
+                             $(".list5").html('<b> In partnerhsip with: </b> ' + feature.properties.partner);
+                             $(".list6").html('<b> Made possible by support from: </b> ' + feature.properties.funder);
+                         //   $(".list7").html('<b> More information: </b> ' + feature.properties.url);
+                            $(".list7").html('<a href="'+feature.properties.url+'" target="_blank">Click here for more information</a>');
+                      
+                        });
+                    }
+                }).addTo(map);
+                sequenceUI(education, outreach, support);
+                updateSymbols(education, outreach, support, '2016')
+                var overlays = {
+
+                    "<span style='color:#fdb405; font-size: 13pt'>Visual Art Education</span>": education,
+                    "<span style='color:#00aeef; font-size: 13pt''>Community Outreach</span>": outreach,
+                    "<span style='color:#ef001c; font-size: 13pt''>Artist Support</span>": support
+
+
+
+                };
+                L.control.layers(null, overlays, {
+                    collapsed: false,
+                    position: "topright"
+                }).addTo(map);
+            }
+            function updateSymbols(education, outreach, support, currentYear) {
+                // some kind of variabe here??
+                var year;
+                education.eachLayer(function(layer) {
+                    var year = layer.feature.properties["Year"];
+                    if(year != currentYear) {
+                      layer.setOpacity(0);
+                      layer.interactive = false;
+                    } else {
+                      layer.setOpacity(1);
+                      layer.interactive = false;
+                    }
+                });
+                outreach.eachLayer(function(layer){
+                  var year = layer.feature.properties["Year"];
+                  if(year != currentYear) {
+                    layer.setOpacity(0);
+                    layer.interactive = false;
+                  } else {
+                    layer.setOpacity(1);
+                    layer.interactive = false;
+                  }
+                });
+                support.eachLayer(function(layer) {
+                  var year = layer.feature.properties["Year"];
+                  if(year != currentYear) {
+                    layer.setOpacity(0);
+                    layer.interactive = false;
+                  } else {
+                    layer.setOpacity(1);
+                    layer.interactive = false;
+                  }
+                });
+            }
+            //this is nonsense
+            function sequenceUI(education, outreach, support) {
+                $('.slider')
+                    .on('input change', function() {
+                        var currentYear = $(this).val();
+                        //         console.log($(this).val());
+                        console.log(currentYear)
+                        updateSymbols(education, outreach, support, currentYear);
+                             $('#year span').html(currentYear);
+                    });
+            }
+        </script>
+</body>
+
+</html>
